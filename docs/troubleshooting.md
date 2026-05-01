@@ -12,13 +12,13 @@
 
 ## エラー別の対処法
 
-### X API
+### RSS / Webニュース取得
 
 | 症状 | 原因 | 対処 |
 |---|---|---|
-| `401 Unauthorized` | 4つのキーのいずれかが間違っているか期限切れ | console.x.com → アプリ → キーとトークン → 「OAuth 1.0 キー」のアクセストークンを再生成し、GitHub Secrets を更新 |
-| `429 Too Many Requests` | レート制限に到達 | 15分待機してから再実行。`src/settings.ts` の `maxTweets` を下げる |
-| X API が使えない / 申請が通らない | pay-per-use の Billing 未設定、または申請待ち | X Developer Portal → Billing → Add payment method。申請中は `USE_SAMPLE_DATA=true` のモックルートで動作確認 |
+| 記事が極端に少ない | Google News RSS が一時的に空・フィルタが厳しい | `src/settings.ts` の `webNews.keywords` に別キーワードを追加、`rssUrls` に業界メディアのRSSを追加 |
+| タイムアウトや fetch エラー | ネットワーク・RSS側の負荷 | しばらく待って再実行。Actions のタイムアウトは `.github/workflows/daily-news.yml` で調整 |
+| モックで動かしたい | 本番RSSを触りたくない | `USE_SAMPLE_DATA=true` で `fixtures/sample-news.json` を読むルートで確認 |
 
 ### Jina Reader
 
@@ -32,19 +32,19 @@
 |---|---|---|
 | `400 API key not valid` | APIキーの誤り | aistudio.google.com で再発行し、GitHub Secrets の `GEMINI_API_KEY` を更新 |
 | `429 Resource exhausted` | Free枠の1日上限超過（Flash 250/day, Pro 100/day） | 明日まで待つ。手動実行は1日1〜2回に抑える |
-| `SAFETY filter` | ツイート内容がセーフティフィルタに抵触 | `maxTweets` を減らす。タイムラインのフォロー先を見直す |
+| `SAFETY filter` | 収集記事がセーフティフィルタに抵触 | `src/settings.ts` の `schedule.maxItems` を減らす、またはキーワードを調整する |
 
-### Slack
+### Google Chat（Webhook）
 
 | 症状 | 原因 | 対処 |
 |---|---|---|
-| `channel_not_found` | `SLACK_CHANNEL` のIDが間違っている | Slackでチャンネルを右クリック → チャンネル詳細 → 最下部のID（`C`で始まる文字列）をコピーし直す |
-| `not_in_channel` | BotアプリがチャンネルにいないBot | チャンネルで `/invite @あなたのBot名` を実行 |
-| `not_authed` / `invalid_auth` | `SLACK_BOT_TOKEN` が間違っているか期限切れ | api.slack.com → アプリ → OAuth & Permissions → Bot User OAuth Token を再コピー |
+| `401` / `403` | Webhook のキー／トークンが無効・期限切れ | スペース設定から Webhook を再作成し、`GOOGLE_CHAT_WEBHOOK_URL` を更新 |
+| `404` | URL が間違っている | Incoming Webhook の URL をコピーし直す（`https://chat.googleapis.com/v1/spaces/.../messages?...`） |
+| HTTPエラーで `[USER-FACING]` | ペイロード過大やネットワーク | `schedule.maxItems` を減らして記事数を抑える |
 
 ### その他
 
 | 症状 | 原因 | 対処 |
 |---|---|---|
-| 成功扱い（緑）だが Slack に投稿がない | `maxTweets: 0` や `lookbackHours: 0` の誤設定 | `src/settings.ts` の値を確認 |
+| 成功（緑）だが Chat に投稿がない | Webhook が別スペース・別Webhook URL を指している | Secret の URL と実際に見ているスペースが一致しているか確認 |
 | Actions がずっと黄色（実行中） | Jina Reader の大量タイムアウト | `src/settings.ts` の `urlContent.parallelism` を `5` に下げる、または `urlContent.enabled` を `false` にして再実行 |

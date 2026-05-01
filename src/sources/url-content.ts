@@ -1,16 +1,15 @@
 import type { Config } from "../config.js";
 import type { Settings } from "../settings.js";
-import type { RawTweet } from "../types.js";
+import type { NewsItem } from "../types.js";
 import { extractUrls, expandUrls } from "../utils/post-optimizer.js";
 import { chunkArray } from "../utils/chunk.js";
 
 /**
- * ツイート内URLの本文を Jina Reader で取得する。
- * 返す Map のキーはツイート内に出現する短縮URL（extractUrls で抽出したもの）。
- * url-summarizer がそのまま Map.get(url) で引けるようにする。
+ * 記事テキスト内URLの本文を Jina Reader で取得する。
+ * 返す Map のキーはテキストに出現する短縮URL（extractUrls で抽出したもの）。
  */
 export async function fetchUrlContents(
-  tweets: RawTweet[],
+  items: NewsItem[],
   config: Config,
   settings: Settings,
 ): Promise<Map<string, string>> {
@@ -21,7 +20,7 @@ export async function fetchUrlContents(
     return contents;
   }
 
-  const allRawUrls = tweets.flatMap((t) => extractUrls(t.text));
+  const allRawUrls = items.flatMap((row) => extractUrls(row.text));
   const uniqueRawUrls = [...new Set(allRawUrls)];
 
   if (uniqueRawUrls.length === 0) return contents;

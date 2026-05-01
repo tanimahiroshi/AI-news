@@ -10,7 +10,7 @@ const TopicSchema = z.object({
 export const AnalysisSchema = z.object({
   main_news: z.array(TopicSchema),
   updates: z.array(TopicSchema),
-  tech_trends: z.array(TopicSchema),
+  market_trends: z.array(TopicSchema),
 });
 
 export type Analysis = z.infer<typeof AnalysisSchema>;

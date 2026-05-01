@@ -1,3 +1,11 @@
+import dotenv from "dotenv";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+
+dotenv.config({
+  path: resolve(dirname(fileURLToPath(import.meta.url)), "..", ".env"),
+});
+
 // ┌──────────────────────────────────────────────────────┐
 // │  読み順ガイド                                        │
 // │  この main() の4ステップを上から読めば全体が分かる。  │
@@ -6,35 +14,62 @@
 // └──────────────────────────────────────────────────────┘
 
 import { loadConfig } from "./config.js";
-import { settings } from "./settings.js";
-import { fetchHomeTimeline } from "./sources/x-timeline.js";
+import { resolveRuntimeSettings, settings } from "./settings.js";
+import { fetchWebNews } from "./sources/web-news.js";
 import { fetchUrlContents } from "./sources/url-content.js";
 import { summarizeUrls } from "./analysis/url-summarizer.js";
 import { analyzeTrends } from "./analysis/analyze.js";
-import { postToSlack } from "./delivery/slack.js";
+import { postToGoogleChat } from "./delivery/google-chat.js";
 import { UserFacingError } from "./utils/errors.js";
+import type { Analysis } from "./analysis/schema.js";
+
+const EMPTY_ANALYSIS: Analysis = {
+  main_news: [],
+  updates: [],
+  market_trends: [],
+};
 
 async function main() {
   const config = loadConfig();
+  const runtimeSettings = resolveRuntimeSettings(settings);
+  if (
+    runtimeSettings.schedule.lookbackHours !== settings.schedule.lookbackHours
+  ) {
+    console.info(
+      `→ ニュース取得期間: 過去${runtimeSettings.schedule.lookbackHours}時間（NEWS_LOOKBACK_HOURS）`,
+    );
+  }
 
-  console.info("[1/4] X のホームタイムラインを取得中...");
-  const tweets = await fetchHomeTimeline(config, settings);
-  console.info(`→ ツイート ${tweets.length}件 を取得`);
+  console.info("[1/4] Webニュース（RSS）から記事を取得中...");
+  const newsItems = await fetchWebNews(config, runtimeSettings);
+  console.info(`→ 記事 ${newsItems.length}件 を取得`);
 
   console.info("[2/4] URL本文を Jina Reader で取得中...");
-  const urlContents = await fetchUrlContents(tweets, config, settings);
-  console.info(`→ 本文取得済みURL: ${urlContents.size}件`);
+  let urlContents = new Map<string, string>();
+  if (newsItems.length > 0) {
+    urlContents = await fetchUrlContents(newsItems, config, runtimeSettings);
+    console.info(`→ 本文取得済みURL: ${urlContents.size}件`);
+  } else {
+    console.info("→ 記事0件のため URL本文取得をスキップ");
+  }
 
-  const enrichedTweets = await summarizeUrls(
-    tweets,
-    urlContents,
-    config,
-    settings,
-  );
-  const analysis = await analyzeTrends(enrichedTweets, config, settings);
+  const enriched =
+    newsItems.length === 0
+      ? []
+      : await summarizeUrls(newsItems, urlContents, config, runtimeSettings);
 
-  console.info("[4/4] Slack へ投稿中...");
-  await postToSlack(analysis, config);
+  if (enriched.length === 0) {
+    console.info("[3b/4] 収集記事が0件のため Gemini 分析をスキップします");
+    console.info("[4/4] Google Chat へ投稿中...");
+    await postToGoogleChat(EMPTY_ANALYSIS, config);
+    console.info("すべての処理が完了しました");
+    return;
+  }
+
+  const analysis = await analyzeTrends(enriched, config, runtimeSettings);
+
+  console.info("[4/4] Google Chat へ投稿中...");
+  await postToGoogleChat(analysis, config);
 
   console.info("すべての処理が完了しました");
 }

@@ -1,0 +1,182 @@
+[
+  {
+    "sourceId": "reuters.example.jp",
+    "text": "大手セルフストレージが関東で第1拠点を開設。コンテナ型トランクルーム約110ユニットを順次供給開始。",
+    "publishedAt": "2026-05-01T22:30:00.000Z",
+    "url": "https://news.example.jp/storage/article-001"
+  },
+  {
+    "sourceId": "storage-trade.example.jp",
+    "text": "大手セルフストレージが関東で第2拠点を開設。コンテナ型トランクルーム約120ユニットを順次供給開始。",
+    "publishedAt": "2026-05-01T21:30:00.000Z",
+    "url": "https://news.example.jp/storage/article-002"
+  },
+  {
+    "sourceId": "citynews.example.jp",
+    "text": "大手セルフストレージが関東で第3拠点を開設。コンテナ型トランクルーム約130ユニットを順次供給開始。",
+    "publishedAt": "2026-05-01T20:30:00.000Z",
+    "url": "https://news.example.jp/storage/article-003"
+  },
+  {
+    "sourceId": "biz.example.jp",
+    "text": "大手セルフストレージが関東で第4拠点を開設。コンテナ型トランクルーム約140ユニットを順次供給開始。",
+    "publishedAt": "2026-05-01T19:30:00.000Z",
+    "url": "https://news.example.jp/storage/article-004"
+  },
+  {
+    "sourceId": "nikkei.example.jp",
+    "text": "大手セルフストレージが関東で第5拠点を開設。コンテナ型トランクルーム約150ユニットを順次供給開始。",
+    "publishedAt": "2026-05-01T18:30:00.000Z",
+    "url": "https://news.example.jp/storage/article-005"
+  },
+  {
+    "sourceId": "reuters.example.jp",
+    "text": "大手セルフストレージが関東で第6拠点を開設。コンテナ型トランクルーム約160ユニットを順次供給開始。",
+    "publishedAt": "2026-05-01T17:30:00.000Z",
+    "url": "https://news.example.jp/storage/article-006"
+  },
+  {
+    "sourceId": "storage-trade.example.jp",
+    "text": "大手セルフストレージが関東で第7拠点を開設。コンテナ型トランクルーム約170ユニットを順次供給開始。",
+    "publishedAt": "2026-05-01T16:30:00.000Z",
+    "url": "https://news.example.jp/storage/article-007"
+  },
+  {
+    "sourceId": "citynews.example.jp",
+    "text": "大手セルフストレージが関東で第8拠点を開設。コンテナ型トランクルーム約180ユニットを順次供給開始。",
+    "publishedAt": "2026-05-01T15:30:00.000Z",
+    "url": "https://news.example.jp/storage/article-008"
+  },
+  {
+    "sourceId": "biz.example.jp",
+    "text": "大手セルフストレージが関東で第9拠点を開設。コンテナ型トランクルーム約190ユニットを順次供給開始。",
+    "publishedAt": "2026-05-01T14:30:00.000Z",
+    "url": "https://news.example.jp/storage/article-009"
+  },
+  {
+    "sourceId": "nikkei.example.jp",
+    "text": "大手セルフストレージが関東で第10拠点を開設。コンテナ型トランクルーム約200ユニットを順次供給開始。",
+    "publishedAt": "2026-05-01T13:30:00.000Z",
+    "url": "https://news.example.jp/storage/article-010"
+  },
+  {
+    "sourceId": "reuters.example.jp",
+    "text": "大手セルフストレージが関東で第11拠点を開設。コンテナ型トランクルーム約210ユニットを順次供給開始。",
+    "publishedAt": "2026-05-01T12:30:00.000Z",
+    "url": "https://news.example.jp/storage/article-011"
+  },
+  {
+    "sourceId": "storage-trade.example.jp",
+    "text": "大手セルフストレージが関東で第12拠点を開設。コンテナ型トランクルーム約220ユニットを順次供給開始。",
+    "publishedAt": "2026-05-01T11:30:00.000Z",
+    "url": "https://news.example.jp/storage/article-012"
+  },
+  {
+    "sourceId": "citynews.example.jp",
+    "text": "大手セルフストレージが関東で第13拠点を開設。コンテナ型トランクルーム約230ユニットを順次供給開始。",
+    "publishedAt": "2026-05-01T10:30:00.000Z",
+    "url": "https://news.example.jp/storage/article-013"
+  },
+  {
+    "sourceId": "biz.example.jp",
+    "text": "大手セルフストレージが関東で第14拠点を開設。コンテナ型トランクルーム約240ユニットを順次供給開始。",
+    "publishedAt": "2026-05-01T09:30:00.000Z",
+    "url": "https://news.example.jp/storage/article-014"
+  },
+  {
+    "sourceId": "nikkei.example.jp",
+    "text": "大手セルフストレージが関東で第15拠点を開設。コンテナ型トランクルーム約250ユニットを順次供給開始。",
+    "publishedAt": "2026-05-01T08:30:00.000Z",
+    "url": "https://news.example.jp/storage/article-015"
+  },
+  {
+    "sourceId": "reuters.example.jp",
+    "text": "大手セルフストレージが関東で第16拠点を開設。コンテナ型トランクルーム約260ユニットを順次供給開始。",
+    "publishedAt": "2026-05-01T07:30:00.000Z",
+    "url": "https://news.example.jp/storage/article-016"
+  },
+  {
+    "sourceId": "storage-trade.example.jp",
+    "text": "大手セルフストレージが関東で第17拠点を開設。コンテナ型トランクルーム約270ユニットを順次供給開始。",
+    "publishedAt": "2026-05-01T06:30:00.000Z",
+    "url": "https://news.example.jp/storage/article-017"
+  },
+  {
+    "sourceId": "citynews.example.jp",
+    "text": "大手セルフストレージが関東で第18拠点を開設。コンテナ型トランクルーム約280ユニットを順次供給開始。",
+    "publishedAt": "2026-05-01T05:30:00.000Z",
+    "url": "https://news.example.jp/storage/article-018"
+  },
+  {
+    "sourceId": "biz.example.jp",
+    "text": "大手セルフストレージが関東で第19拠点を開設。コンテナ型トランクルーム約290ユニットを順次供給開始。",
+    "publishedAt": "2026-05-01T04:30:00.000Z",
+    "url": "https://news.example.jp/storage/article-019"
+  },
+  {
+    "sourceId": "nikkei.example.jp",
+    "text": "大手セルフストレージが関東で第20拠点を開設。コンテナ型トランクルーム約300ユニットを順次供給開始。",
+    "publishedAt": "2026-05-01T03:30:00.000Z",
+    "url": "https://news.example.jp/storage/article-020"
+  },
+  {
+    "sourceId": "reuters.example.jp",
+    "text": "大手セルフストレージが関東で第21拠点を開設。コンテナ型トランクルーム約310ユニットを順次供給開始。",
+    "publishedAt": "2026-05-01T02:30:00.000Z",
+    "url": "https://news.example.jp/storage/article-021"
+  },
+  {
+    "sourceId": "storage-trade.example.jp",
+    "text": "大手セルフストレージが関東で第22拠点を開設。コンテナ型トランクルーム約320ユニットを順次供給開始。",
+    "publishedAt": "2026-05-01T01:30:00.000Z",
+    "url": "https://news.example.jp/storage/article-022"
+  },
+  {
+    "sourceId": "citynews.example.jp",
+    "text": "大手セルフストレージが関東で第23拠点を開設。コンテナ型トランクルーム約330ユニットを順次供給開始。",
+    "publishedAt": "2026-05-01T00:30:00.000Z",
+    "url": "https://news.example.jp/storage/article-023"
+  },
+  {
+    "sourceId": "biz.example.jp",
+    "text": "大手セルフストレージが関東で第24拠点を開設。コンテナ型トランクルーム約340ユニットを順次供給開始。",
+    "publishedAt": "2026-04-30T23:30:00.000Z",
+    "url": "https://news.example.jp/storage/article-024"
+  },
+  {
+    "sourceId": "nikkei.example.jp",
+    "text": "大手セルフストレージが関東で第25拠点を開設。コンテナ型トランクルーム約350ユニットを順次供給開始。",
+    "publishedAt": "2026-04-30T22:30:00.000Z",
+    "url": "https://news.example.jp/storage/article-025"
+  },
+  {
+    "sourceId": "reuters.example.jp",
+    "text": "大手セルフストレージが関東で第26拠点を開設。コンテナ型トランクルーム約360ユニットを順次供給開始。",
+    "publishedAt": "2026-04-30T21:30:00.000Z",
+    "url": "https://news.example.jp/storage/article-026"
+  },
+  {
+    "sourceId": "storage-trade.example.jp",
+    "text": "大手セルフストレージが関東で第27拠点を開設。コンテナ型トランクルーム約370ユニットを順次供給開始。",
+    "publishedAt": "2026-04-30T20:30:00.000Z",
+    "url": "https://news.example.jp/storage/article-027"
+  },
+  {
+    "sourceId": "citynews.example.jp",
+    "text": "大手セルフストレージが関東で第28拠点を開設。コンテナ型トランクルーム約380ユニットを順次供給開始。",
+    "publishedAt": "2026-04-30T19:30:00.000Z",
+    "url": "https://news.example.jp/storage/article-028"
+  },
+  {
+    "sourceId": "biz.example.jp",
+    "text": "大手セルフストレージが関東で第29拠点を開設。コンテナ型トランクルーム約390ユニットを順次供給開始。",
+    "publishedAt": "2026-04-30T18:30:00.000Z",
+    "url": "https://news.example.jp/storage/article-029"
+  },
+  {
+    "sourceId": "nikkei.example.jp",
+    "text": "大手セルフストレージが関東で第30拠点を開設。コンテナ型トランクルーム約400ユニットを順次供給開始。",
+    "publishedAt": "2026-04-30T17:30:00.000Z",
+    "url": "https://news.example.jp/storage/article-030"
+  }
+]

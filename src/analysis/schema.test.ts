@@ -4,23 +4,23 @@ import { AnalysisSchema, analysisResponseSchema } from "./schema.js";
 const validAnalysis = {
   main_news: [
     {
-      title: "GPT-5.5が発表",
-      details: ["ネイティブtool use対応", "推論速度が大幅向上"],
-      sources: ["https://x.com/OpenAI/status/123"],
+      title: "大手が関東で新規オープン",
+      details: ["コンテナ型ユニットを270供給", "駅徒歩圏で契約率高い見込み"],
+      sources: ["https://news.example.jp/storage/article-001"],
     },
   ],
   updates: [
     {
-      title: "Cursor Background Agent",
-      details: ["寝ている間にPRを作成"],
-      sources: ["https://x.com/cursor/status/456"],
+      title: "月額プランをリニューアル",
+      details: ["初期費用を値下げ"],
+      sources: ["https://news.example.jp/storage/article-002"],
     },
   ],
-  tech_trends: [
+  market_trends: [
     {
-      title: "テスト時計算量スケーリング",
-      details: ["より大きなモデルからスマートな推論へ", "推論コスト削減"],
-      sources: ["https://x.com/research/status/789"],
+      title: "郊外ロケーションのニーズ増",
+      details: ["駐車場併設型が増加", "住宅ストック活用事例も"],
+      sources: ["https://news.example.jp/storage/article-003"],
     },
   ],
 };
@@ -30,14 +30,14 @@ describe("AnalysisSchema", () => {
     const result = AnalysisSchema.parse(validAnalysis);
     expect(result.main_news).toHaveLength(1);
     expect(result.updates).toHaveLength(1);
-    expect(result.tech_trends).toHaveLength(1);
+    expect(result.market_trends).toHaveLength(1);
   });
 
   it("空セクションを許容する", () => {
     const result = AnalysisSchema.parse({
       main_news: [],
       updates: [],
-      tech_trends: [],
+      market_trends: [],
     });
     expect(result.main_news).toHaveLength(0);
   });
@@ -59,7 +59,7 @@ describe("AnalysisSchema", () => {
           },
         ],
         updates: [],
-        tech_trends: [],
+        market_trends: [],
       }),
     ).toThrow();
   });
@@ -74,7 +74,7 @@ describe("AnalysisSchema", () => {
         },
       ],
       updates: [],
-      tech_trends: [],
+      market_trends: [],
     });
     expect(result.main_news[0]!.details).toHaveLength(3);
   });
@@ -93,6 +93,6 @@ describe("analysisResponseSchema", () => {
     expect(props).toBeDefined();
     expect(props).toHaveProperty("main_news");
     expect(props).toHaveProperty("updates");
-    expect(props).toHaveProperty("tech_trends");
+    expect(props).toHaveProperty("market_trends");
   });
 });

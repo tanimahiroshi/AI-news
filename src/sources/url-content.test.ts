@@ -2,18 +2,19 @@ import { describe, it, expect, vi } from "vitest";
 import { fetchUrlContents } from "./url-content.js";
 import type { Config } from "../config.js";
 import type { Settings } from "../settings.js";
-import type { RawTweet } from "../types.js";
+import type { NewsItem } from "../types.js";
 
 const mockConfig: Config = {
   JINA_API_KEY: "test-jina",
   GEMINI_API_KEY: "test-gemini",
-  SLACK_BOT_TOKEN: "xoxb-test",
-  SLACK_CHANNEL: "C123",
+  GOOGLE_CHAT_WEBHOOK_URL:
+    "https://chat.googleapis.com/v1/spaces/AAA/messages?key=test",
   USE_SAMPLE_DATA: true,
 };
 
 const baseSettings: Settings = {
-  schedule: { lookbackHours: 24, maxTweets: 100 },
+  schedule: { lookbackHours: 24, maxItems: 100 },
+  webNews: { keywords: [], rssUrls: [] },
   urlContent: {
     enabled: true,
     timeoutMs: 5000,
@@ -33,37 +34,37 @@ const disabledSettings: Settings = {
   urlContent: { ...baseSettings.urlContent, enabled: false },
 };
 
-const tweetsNoUrl: RawTweet[] = [
+const itemsNoUrl: NewsItem[] = [
   {
-    authorId: "user1",
-    text: "URLなしのツイート",
-    createdAt: "2026-04-16T10:00:00.000Z",
-    url: "https://x.com/user1/status/1",
+    sourceId: "news.example.jp",
+    text: "URLなしの記事概要のみ",
+    publishedAt: "2026-04-16T10:00:00.000Z",
+    url: "https://news.example.jp/storage/article-000",
   },
 ];
 
-function makeTweetsWithUrls(...urls: string[]): RawTweet[] {
+function makeItemsWithUrls(...urls: string[]): NewsItem[] {
   return urls.map((u, i) => ({
-    authorId: "user1",
-    text: `Check out ${u}`,
-    createdAt: "2026-04-16T10:00:00.000Z",
-    url: `https://x.com/user1/status/${i + 1}`,
+    sourceId: "news.example.jp",
+    text: `Link ${u}`,
+    publishedAt: "2026-04-16T10:00:00.000Z",
+    url: `https://news.example.jp/storage/article-${i + 1}`,
   }));
 }
 
 describe("fetchUrlContents", () => {
   it("urlContent.enabled=false のとき空Mapを返す", async () => {
     const result = await fetchUrlContents(
-      makeTweetsWithUrls("https://example.com/article"),
+      makeItemsWithUrls("https://example.com/article"),
       mockConfig,
       disabledSettings,
     );
     expect(result.size).toBe(0);
   });
 
-  it("URLがないツイートでは空Mapを返す", async () => {
+  it("URLがない記事では空Mapを返す", async () => {
     const result = await fetchUrlContents(
-      tweetsNoUrl,
+      itemsNoUrl,
       mockConfig,
       baseSettings,
     );
@@ -75,20 +76,20 @@ describe("fetchUrlContents", () => {
       "fetch",
       vi.fn((input: string | URL | Request, init?: RequestInit) => {
         const url = typeof input === "string" ? input : input.toString();
-        // HEAD展開: 展開後URLとしてそのまま返す（x.com系でないので通過する）
         if (init?.method === "HEAD") {
           return Promise.resolve({ url });
         }
-        // Jina Reader 呼び出し
         if (url.startsWith("https://r.jina.ai/")) {
-          return Promise.resolve(new Response("Article body content", { status: 200 }));
+          return Promise.resolve(
+            new Response("Article body content", { status: 200 }),
+          );
         }
         return Promise.resolve(new Response(null, { status: 404 }));
       }),
     );
 
-    const tweets = makeTweetsWithUrls("https://example.com/article");
-    const result = await fetchUrlContents(tweets, mockConfig, baseSettings);
+    const items = makeItemsWithUrls("https://example.com/article");
+    const result = await fetchUrlContents(items, mockConfig, baseSettings);
     expect(result.size).toBe(1);
     const content = [...result.values()][0];
     expect(content).toBe("Article body content");
@@ -114,12 +115,12 @@ describe("fetchUrlContents", () => {
       }),
     );
 
-    const tweets = makeTweetsWithUrls(
+    const items = makeItemsWithUrls(
       "https://a.example.com/1",
       "https://b.example.com/2",
       "https://c.example.com/3",
     );
-    const result = await fetchUrlContents(tweets, mockConfig, {
+    const result = await fetchUrlContents(items, mockConfig, {
       ...baseSettings,
       urlContent: { ...baseSettings.urlContent, parallelism: 1 },
     });

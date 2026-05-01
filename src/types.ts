@@ -1,11 +1,12 @@
-export interface RawTweet {
-  authorId: string;
+export interface NewsItem {
+  /** メディア名・公開元など（RSSフィード名または記事ドメイン） */
+  sourceId: string;
+  /** 見出しや概要など本文として渡すテキスト */
   text: string;
-  createdAt: string;
+  publishedAt: string;
   url: string;
-  quotedText?: string;
 }
 
-export interface EnrichedTweet extends RawTweet {
+export interface EnrichedNewsItem extends NewsItem {
   enrichedText: string;
 }

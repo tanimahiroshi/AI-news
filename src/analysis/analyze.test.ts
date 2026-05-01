@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from "vitest";
 import { UserFacingError } from "../utils/errors.js";
 import type { Settings } from "../settings.js";
 import type { Config } from "../config.js";
-import type { EnrichedTweet } from "../types.js";
+import type { EnrichedNewsItem } from "../types.js";
 
 const { mockGenerateContent } = vi.hoisted(() => ({
   mockGenerateContent: vi.fn(),
@@ -19,13 +19,14 @@ const { analyzeTrends } = await import("./analyze.js");
 const mockConfig: Config = {
   JINA_API_KEY: "test",
   GEMINI_API_KEY: "test",
-  SLACK_BOT_TOKEN: "xoxb-test",
-  SLACK_CHANNEL: "C123",
+  GOOGLE_CHAT_WEBHOOK_URL:
+    "https://chat.googleapis.com/v1/spaces/AAA/messages?key=test",
   USE_SAMPLE_DATA: true,
 };
 
 const mockSettings: Settings = {
-  schedule: { lookbackHours: 24, maxTweets: 100 },
+  schedule: { lookbackHours: 24, maxItems: 100 },
+  webNews: { keywords: [], rssUrls: [] },
   urlContent: {
     enabled: false,
     timeoutMs: 5000,
@@ -40,13 +41,13 @@ const mockSettings: Settings = {
   },
 };
 
-const sampleTweets: EnrichedTweet[] = [
+const sampleItems: EnrichedNewsItem[] = [
   {
-    authorId: "test",
-    text: "AI news",
-    createdAt: "2026-04-16T10:00:00.000Z",
-    url: "https://x.com/test/status/1",
-    enrichedText: "AI news",
+    sourceId: "news.example.jp",
+    text: "セルフストレージ業界ニュース",
+    publishedAt: "2026-04-16T10:00:00.000Z",
+    url: "https://news.example.jp/storage/article-001",
+    enrichedText: "セルフストレージ業界ニュース",
   },
 ];
 
@@ -55,11 +56,11 @@ const validResponse = {
     {
       title: "Test News",
       details: ["Detail"],
-      sources: ["https://x.com/test/status/1"],
+      sources: ["https://news.example.jp/storage/article-001"],
     },
   ],
   updates: [],
-  tech_trends: [],
+  market_trends: [],
 };
 
 describe("analyzeTrends", () => {
@@ -69,7 +70,7 @@ describe("analyzeTrends", () => {
       candidates: [{ finishReason: "STOP" }],
     });
 
-    const result = await analyzeTrends(sampleTweets, mockConfig, mockSettings);
+    const result = await analyzeTrends(sampleItems, mockConfig, mockSettings);
     expect(result.main_news).toHaveLength(1);
     expect(result.main_news[0]!.title).toBe("Test News");
   });
@@ -81,7 +82,7 @@ describe("analyzeTrends", () => {
     });
 
     await expect(
-      analyzeTrends(sampleTweets, mockConfig, mockSettings),
+      analyzeTrends(sampleItems, mockConfig, mockSettings),
     ).rejects.toThrow(UserFacingError);
   });
 });

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import type { Settings } from "../settings.js";
 import type { Config } from "../config.js";
-import type { RawTweet } from "../types.js";
+import type { NewsItem } from "../types.js";
 
 const { mockGenerateContent } = vi.hoisted(() => ({
   mockGenerateContent: vi.fn(),
@@ -18,13 +18,14 @@ const { summarizeUrls } = await import("./url-summarizer.js");
 const mockConfig: Config = {
   JINA_API_KEY: "test",
   GEMINI_API_KEY: "test",
-  SLACK_BOT_TOKEN: "xoxb-test",
-  SLACK_CHANNEL: "C123",
+  GOOGLE_CHAT_WEBHOOK_URL:
+    "https://chat.googleapis.com/v1/spaces/AAA/messages?key=test",
   USE_SAMPLE_DATA: true,
 };
 
 const mockSettings: Settings = {
-  schedule: { lookbackHours: 24, maxTweets: 100 },
+  schedule: { lookbackHours: 24, maxItems: 100 },
+  webNews: { keywords: [], rssUrls: [] },
   urlContent: {
     enabled: true,
     timeoutMs: 5000,
@@ -39,26 +40,26 @@ const mockSettings: Settings = {
   },
 };
 
-const sampleTweets: RawTweet[] = [
+const sampleItems: NewsItem[] = [
   {
-    authorId: "user1",
-    text: "Check out https://example.com/article",
-    createdAt: "2026-04-16T10:00:00.000Z",
-    url: "https://x.com/user1/status/1",
+    sourceId: "news.example.jp",
+    text: "詳細はこちら https://example.com/article",
+    publishedAt: "2026-04-16T10:00:00.000Z",
+    url: "https://news.example.jp/storage/article-001",
   },
 ];
 
 describe("summarizeUrls", () => {
   it("urlContents が空のとき元テキストをそのまま返す", async () => {
     const result = await summarizeUrls(
-      sampleTweets,
+      sampleItems,
       new Map(),
       mockConfig,
       mockSettings,
     );
     expect(result).toHaveLength(1);
     expect(result[0]!.enrichedText).toBe(
-      "Check out https://example.com/article",
+      "詳細はこちら https://example.com/article",
     );
   });
 
@@ -72,7 +73,7 @@ describe("summarizeUrls", () => {
     ]);
 
     const result = await summarizeUrls(
-      sampleTweets,
+      sampleItems,
       urlContents,
       mockConfig,
       mockSettings,

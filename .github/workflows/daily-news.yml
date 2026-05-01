@@ -1,14 +1,15 @@
-name: Daily AI News
+name: Daily Self-Storage News
 
 on:
   workflow_dispatch:
     inputs:
       use_sample_data:
-        description: 'fixtures/sample-tweets.json を使って動作確認する（X連携なし）'
+        description: 'fixtures/sample-news.json を使って動作確認する（RSS取得なし）'
         type: boolean
         default: false
   schedule:
-    - cron: '30 22 * * *'  # 毎日 07:30 JST
+    # 毎日 08:00 JST（UTC 23:00）。日本はサマータイムなしのため固定オフセット。
+    - cron: '0 23 * * *'
 
 permissions:
   contents: read
@@ -33,27 +34,17 @@ jobs:
 
       - run: npm start
         env:
-          USE_SAMPLE_DATA: ${{ inputs.use_sample_data }}
-          X_CONSUMER_KEY: ${{ secrets.X_CONSUMER_KEY }}
-          X_CONSUMER_SECRET: ${{ secrets.X_CONSUMER_SECRET }}
-          X_ACCESS_TOKEN: ${{ secrets.X_ACCESS_TOKEN }}
-          X_ACCESS_TOKEN_SECRET: ${{ secrets.X_ACCESS_TOKEN_SECRET }}
+          USE_SAMPLE_DATA: ${{ github.event_name == 'workflow_dispatch' && inputs.use_sample_data == true && 'true' || 'false' }}
           JINA_API_KEY: ${{ secrets.JINA_API_KEY }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-          SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL }}
+          GOOGLE_CHAT_WEBHOOK_URL: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
 
-      - name: Notify failure to Slack
+      - name: Notify failure to Google Chat
         if: failure()
-        run: |
-          curl -X POST "https://slack.com/api/chat.postMessage" \
-            -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
-            -H "Content-Type: application/json" \
-            -d '{
-              "channel": "'"${SLACK_CHANNEL}"'",
-              "text": ":x: *AIニュース エラー発生*\nワークフロー実行: <'"${FAILED_RUN_URL}"'|詳細を確認>"
-            }'
         env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-          SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL }}
+          GOOGLE_CHAT_WEBHOOK_URL: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
           FAILED_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          curl -sS -X POST "$GOOGLE_CHAT_WEBHOOK_URL" \
+            -H "Content-Type: application/json; charset=UTF-8" \
+            -d "{\"text\": \"❌ Daily Self-Storage News が失敗しました。ワークフローを確認してください: ${FAILED_RUN_URL}\"}"

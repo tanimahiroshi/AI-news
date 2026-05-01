@@ -1,19 +1,19 @@
 import { GoogleGenAI } from "@google/genai";
 import type { Config } from "../config.js";
 import type { Settings } from "../settings.js";
-import type { RawTweet, EnrichedTweet } from "../types.js";
+import type { NewsItem, EnrichedNewsItem } from "../types.js";
 import { extractUrls } from "../utils/post-optimizer.js";
 import { chunkArray } from "../utils/chunk.js";
 import { URL_SUMMARY_PROMPT } from "./prompts.js";
 
 export async function summarizeUrls(
-  tweets: RawTweet[],
+  items: NewsItem[],
   urlContents: Map<string, string>,
   config: Config,
   settings: Settings,
-): Promise<EnrichedTweet[]> {
+): Promise<EnrichedNewsItem[]> {
   if (urlContents.size === 0) {
-    return tweets.map((t) => ({ ...t, enrichedText: buildFullText(t) }));
+    return items.map((row) => ({ ...row, enrichedText: row.text }));
   }
 
   console.info("[3a/4] 各URLを Gemini Flash で要約中...");
@@ -55,23 +55,14 @@ export async function summarizeUrls(
 
   console.info(`→ URL要約完了: ${summaryCache.size}件`);
 
-  return tweets.map((tweet) => {
-    let enrichedText = buildFullText(tweet);
-    for (const url of extractUrls(tweet.text)) {
+  return items.map((row) => {
+    let enrichedText = row.text;
+    for (const url of extractUrls(row.text)) {
       const summary = summaryCache.get(url);
       if (summary) {
         enrichedText += `\n[補足情報]: ${summary}`;
       }
     }
-    return { ...tweet, enrichedText };
+    return { ...row, enrichedText };
   });
 }
-
-function buildFullText(tweet: RawTweet): string {
-  let text = tweet.text;
-  if (tweet.quotedText) {
-    text += `\n${tweet.quotedText}`;
-  }
-  return text;
-}
-
