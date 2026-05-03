@@ -11,6 +11,7 @@ import type { EnrichedNewsItem } from "../types.js";
 import { UserFacingError } from "../utils/errors.js";
 import { cleanText } from "../utils/post-optimizer.js";
 import { dedupeAnalysisSources } from "./analysis-dedupe.js";
+import { withRetry } from "../utils/retry.js";
 
 export async function analyzeTrends(
   items: EnrichedNewsItem[],
@@ -35,15 +36,17 @@ export async function analyzeTrends(
     JSON.stringify(postsForPrompt, null, 2),
   );
 
-  const res = await ai.models.generateContent({
-    model: settings.analysis.trendAnalysisModel,
-    contents: prompt,
-    config: {
-      temperature: settings.analysis.temperature,
-      responseMimeType: "application/json",
-      responseSchema: analysisResponseSchema as Record<string, unknown>,
-    },
-  });
+  const res = await withRetry(() =>
+    ai.models.generateContent({
+      model: settings.analysis.trendAnalysisModel,
+      contents: prompt,
+      config: {
+        temperature: settings.analysis.temperature,
+        responseMimeType: "application/json",
+        responseSchema: analysisResponseSchema as Record<string, unknown>,
+      },
+    }),
+  );
 
   const candidate = (res as { candidates?: Array<{ finishReason?: string }> })
     .candidates?.[0];
