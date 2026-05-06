@@ -10,6 +10,8 @@ on:
   schedule:
     # 毎日 08:00 JST（UTC 23:00）。日本はサマータイムなしのため固定オフセット。
     - cron: '0 23 * * *'
+    # バックアップ実行: 毎日 10:00 JST（UTC 01:00）
+    - cron: '0 1 * * *'
 
 permissions:
   contents: read
@@ -32,12 +34,43 @@ jobs:
 
       - run: npm ci
 
+      - name: Set today's date (JST)
+        id: date
+        run: echo "TODAY=$(TZ=Asia/Tokyo date +'%Y-%m-%d')" >> "$GITHUB_OUTPUT"
+
+      - name: Check if already delivered today
+        id: delivery_cache
+        if: github.event_name == 'schedule'
+        uses: actions/cache/restore@v4
+        with:
+          path: .cache/delivered
+          key: news-delivered-${{ steps.date.outputs.TODAY }}
+          lookup-only: true
+
+      - name: Skip duplicate schedule delivery
+        if: github.event_name == 'schedule' && steps.delivery_cache.outputs.cache-hit == 'true'
+        run: echo "本日は既に配信済みのためスキップします。"
+
       - run: npm start
+        if: github.event_name != 'schedule' || steps.delivery_cache.outputs.cache-hit != 'true'
         env:
           USE_SAMPLE_DATA: ${{ github.event_name == 'workflow_dispatch' && inputs.use_sample_data == true && 'true' || 'false' }}
           JINA_API_KEY: ${{ secrets.JINA_API_KEY }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GOOGLE_CHAT_WEBHOOK_URL: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
+
+      - name: Prepare delivery marker
+        if: (github.event_name != 'schedule' || steps.delivery_cache.outputs.cache-hit != 'true') && success()
+        run: |
+          mkdir -p .cache/delivered
+          echo "delivered_at=$(TZ=Asia/Tokyo date --iso-8601=seconds)" > ".cache/delivered/${{ steps.date.outputs.TODAY }}.txt"
+
+      - name: Save delivery cache
+        if: (github.event_name != 'schedule' || steps.delivery_cache.outputs.cache-hit != 'true') && success()
+        uses: actions/cache/save@v4
+        with:
+          path: .cache/delivered
+          key: news-delivered-${{ steps.date.outputs.TODAY }}
 
       - name: Notify failure to Google Chat
         if: failure()
